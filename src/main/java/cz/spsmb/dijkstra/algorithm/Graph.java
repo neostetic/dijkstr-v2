@@ -26,7 +26,7 @@ public class Graph {
             if (node.getDistance() < Integer.MAX_VALUE) {
                 distance = node.getDistance();
             }
-            a.append(node + " = " + distance + " ; ");
+            a.append("\n - " + node + " = " + distance);
         }
         return a.toString();
     }

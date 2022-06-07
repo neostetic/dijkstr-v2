@@ -1,1 +1,1 @@
-Create:A;Create:B;Create:C;Create:D;Create:E;Update:C,B,12;
+Create:Praha;Create:Brno;Create:Ostrava;Create:Liberec;Create:Kladno;Create:Plnzeň;Create:Mladá Boleslav;Create:Aš;Create:Bratislava;Update:Praha,Mladá Boleslav,34;Update:Brno,Ostrava,12;Update:Ostrava,Praha,64;Update:Brno,Liberec,45;Update:Kladno,Ostrava,29;Update:Plnzeň,Liberec,18;Update:Aš,Liberec,40;Update:Aš,Ostrava,14;Update:Brno,Bratislava,72;

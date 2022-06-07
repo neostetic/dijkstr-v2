@@ -27,11 +27,11 @@ public class Controller {
     public ListView<String> nodeList;
     public ArrayList<Node> nodeArray = new ArrayList<>();
 
-    public void initialize() throws IOException {
+    public void initialize() {
         popup.setVisible(false);
         if (FileUtil.exists()) {
-            FileNode updateArrays = FileUtil.readFromFile();
             try {
+                FileNode updateArrays = FileUtil.readFromFile();
                 for (int i = 0; i < updateArrays.createNodes.size(); i++) {
                     createNodeName(updateArrays.createNodes.get(i));
                 }
@@ -152,6 +152,9 @@ public class Controller {
     }
 
     private String stringController(String string) {
-        return string.replaceAll(";","").replaceAll(":","").replaceAll(",","");
+        if (string.length() <= 0 || string.equals(" "))
+            return "*empty*";
+        else
+            return string.replaceAll(";","").replaceAll(":","").replaceAll(",","");
     }
 }

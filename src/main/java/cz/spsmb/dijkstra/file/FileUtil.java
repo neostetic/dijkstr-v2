@@ -2,7 +2,6 @@ package cz.spsmb.dijkstra.file;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class FileUtil {
 
