@@ -19,6 +19,18 @@ public class Graph {
         this.nodes = nodes;
     }
 
+    public String toStringWithDistance() {
+        StringBuilder a = new StringBuilder();
+        for (Node node: nodes) {
+            int distance = 0;
+            if (node.getDistance() < Integer.MAX_VALUE) {
+                distance = node.getDistance();
+            }
+            a.append(node + " = " + distance + " ; ");
+        }
+        return a.toString();
+    }
+
     @Override
     public String toString() {
         return "Graph{" +

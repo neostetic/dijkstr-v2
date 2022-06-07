@@ -8,7 +8,7 @@ import java.util.Set;
 public class Dijkstra {
 
     public static Graph calculateShortestPathFromSource(Graph graph, Node source) {
-
+        int distanceBefore = Integer.MAX_VALUE;
         source.setDistance(0);
 
         Set<Node> settledNodes = new HashSet<>();
@@ -29,6 +29,7 @@ public class Dijkstra {
             }
             settledNodes.add(currentNode);
         }
+        source.setDistance(distanceBefore);
         return graph;
     }
 

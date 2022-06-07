@@ -3,12 +3,14 @@ package cz.spsmb.dijkstra;
 import cz.spsmb.dijkstra.algorithm.Dijkstra;
 import cz.spsmb.dijkstra.algorithm.Graph;
 import cz.spsmb.dijkstra.algorithm.Node;
+import cz.spsmb.dijkstra.file.FileNode;
+import cz.spsmb.dijkstra.file.FileUtil;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Controller {
@@ -25,24 +27,38 @@ public class Controller {
     public ListView<String> nodeList;
     public ArrayList<Node> nodeArray = new ArrayList<>();
 
-    public void initialize() {
+    public void initialize() throws IOException {
         popup.setVisible(false);
+        if (FileUtil.exists()) {
+            FileNode updateArrays = FileUtil.readFromFile();
+            try {
+                for (int i = 0; i < updateArrays.createNodes.size(); i++) {
+                    createNodeName(updateArrays.createNodes.get(i));
+                }
+                for (int i = 0; i < updateArrays.updateNodes.size(); i++) {
+                    String node1 = updateArrays.updateNodes.get(i)[0];
+                    String node2 = updateArrays.updateNodes.get(i)[1];
+                    int distance = Integer.parseInt(updateArrays.updateNodes.get(i)[2]);
+                    updateDestiny(nodeArray.get(getIndexInArray(node1)), nodeArray.get(getIndexInArray(node2)), distance);
+                }
+            } catch (Exception e) {
+                popupSet("Something went wrong with Input Save (input.txt corrupted) - Restart the Program");
+            }
+        }
     }
 
     public void onCreateNodeButton(ActionEvent actionEvent) {
-        String name = createName.getText();
+        String name = stringController(createName.getText());
         if (getIndexInArray(name) < 0) {
-            nodeArray.add(new Node(name));
-            createName.setText("");
-            updateListView();
+            createNodeName(name);
         } else {
             popupSet("Node already exist (" + name + ")");
         }
     }
 
     public void onUpdateNodeButton(ActionEvent actionEvent) {
-        String name = updateName.getText();
-        String destinyName = updateDestiny.getText();
+        String name = stringController(updateName.getText());
+        String destinyName = stringController(updateDestiny.getText());
 
         int nodeInt = getIndexInArray(name);
         int destinyNodeInt = getIndexInArray(destinyName);
@@ -56,14 +72,13 @@ public class Controller {
             Node destinyNode = nodeArray.get(destinyNodeInt);
             try {
                 int destinyDistance = Integer.parseInt(updateDistance.getText());
-                node.addDestination(destinyNode, destinyDistance);
                 if (destinyDistance < 0) {
                     popupSet("Please, set valid Number Type (" + updateDistance.getText() + ")");
                 } else {
+                    updateDestiny(node, destinyNode, destinyDistance);
                     updateName.setText("");
                     updateDestiny.setText("");
                     updateDistance.setText("");
-                    updateListView();
                 }
             } catch (NumberFormatException e) {
                 popupSet("Please, set valid Number Type (" + updateDistance.getText() + ")");
@@ -74,6 +89,7 @@ public class Controller {
     
     public void onDeleteButton(ActionEvent actionEvent) {
         nodeArray.clear();
+        FileUtil.deleteFile();
         updateListView();
     }
 
@@ -87,7 +103,7 @@ public class Controller {
     private void updateListView() {
         nodeList.getItems().clear();
         for (Node node : nodeArray) {
-            nodeList.getItems().add(node.pleaseString());
+            nodeList.getItems().add(node.toControllerString());
         }
     }
 
@@ -110,11 +126,32 @@ public class Controller {
             if (getIndexInArray(nodeDestiny) < 0) {
                 popupSet("Your Destiny doesn't exists (" + nodeDestiny + ")");
             } else {
-                calculateText.setText(Dijkstra.calculateShortestPathFromSource(graph, nodeArray.get(getIndexInArray(nodeDestiny))).toString());
+                calculateText.setText(
+                        "Chosen Node: " + calculateDestiny.getText() + "\n" +
+                        "Calculate paths: " + Dijkstra.calculateShortestPathFromSource(graph, nodeArray.get(getIndexInArray(nodeDestiny))).toStringWithDistance());
                 calculateDestiny.setText("");
             }
         } catch (Exception e) {
             popupSet("Your Nodes are Missing");
         }
+    }
+
+    private void createNodeName(String name) {
+        stringController(name);
+        nodeArray.add(new Node(name));
+        createName.setText("");
+        FileUtil.writeToFile(name);
+        updateListView();
+    }
+
+    private void updateDestiny(Node node, Node destinyNode, int destinyDistance) {
+        node.addDestination(destinyNode, destinyDistance);
+        destinyNode.addDestination(node, destinyDistance);
+        FileUtil.writeToFile(node.getName(), destinyNode.getName(), destinyDistance);
+        updateListView();
+    }
+
+    private String stringController(String string) {
+        return string.replaceAll(";","").replaceAll(":","").replaceAll(",","");
     }
 }

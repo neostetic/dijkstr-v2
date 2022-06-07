@@ -55,22 +55,12 @@ public class Node {
         this.shortestPath = shortestPath;
     }
 
-//    @Override
-//    public String toString() {
-//        return name;
-//    }
-
     @Override
     public String toString() {
-        return "Node{" +
-            "name='" + name + '\'' +
-            ", shortestPath=" + shortestPath +
-            ", distance=" + distance +
-            ", adjacentNodes=" + adjacentNodes +
-            '}';
+        return name;
     }
 
-    public String pleaseString() {
+    public String toControllerString() {
         return name + " " + adjacentNodes;
     }
 }
